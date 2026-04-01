@@ -17,7 +17,7 @@
         role="img"
         aria-label="濱"
       >
-        <circle class="ring" cx="50" cy="50" r="42" />
+        <circle class="ring" cx="50" cy="50" r="46" />
         <text class="kanji" x="50" y="50" dominant-baseline="central" text-anchor="middle">
           濱
         </text>
@@ -27,8 +27,9 @@
       </button>
     </main>
     <div class="viewer" id="viewer" aria-hidden="true">
-      <button class="viewer-close" type="button" aria-label="閉じる">×</button>
+      <button class="viewer-close" type="button" aria-label="前へ戻る">PREV</button>
       <img class="viewer-image" src="./manbiki.png" alt="manbiki" />
+      <div class="viewer-pulse" aria-hidden="true"></div>
     </div>
     <script>
       const viewer = document.getElementById("viewer");
