@@ -7,67 +7,149 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>濱</title>
-    <link rel="stylesheet" href="./styles.css?v=5" />
+    <link rel="stylesheet" href="./styles.css?v=16" />
   </head>
   <body>
     <main class="screen">
-      <svg
-        class="mark"
-        viewBox="0 0 100 100"
-        role="img"
-        aria-label="濱"
-      >
+      <svg class="mark" viewBox="0 0 100 100" role="img" aria-label="濱">
         <circle class="ring" cx="50" cy="50" r="46" />
         <text class="kanji" x="50" y="50" dominant-baseline="central" text-anchor="middle">
           濱
         </text>
       </svg>
-      <button class="viewer-button" type="button" aria-controls="viewer">
-        NEXT
-      </button>
+      <button class="viewer-button" type="button" aria-controls="viewer">NEXT</button>
     </main>
     <div class="viewer" id="viewer" aria-hidden="true">
       <button class="viewer-close" type="button" aria-label="前へ戻る">PREV</button>
       <img class="viewer-image" src="./manbiki.png" alt="manbiki" />
-      <svg
-        class="viewer-pulse"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid slice"
-        aria-hidden="true"
-      >
-        <defs>
-          <mask id="pulse-mask">
-            <rect width="100" height="100" fill="white"></rect>
-            <g class="pulse-zoom pulse-zoom--a">
-              <circle class="pulse-hole" cx="50" cy="50" r="19"></circle>
-            </g>
-            <g class="pulse-zoom pulse-zoom--b">
-              <circle class="pulse-hole" cx="50" cy="50" r="19"></circle>
-            </g>
-          </mask>
-        </defs>
-        <rect class="pulse-overlay" width="100" height="100" mask="url(#pulse-mask)"></rect>
-        <g class="pulse-zoom pulse-zoom--a">
-          <circle class="pulse-border" cx="50" cy="50" r="19"></circle>
-        </g>
-        <g class="pulse-zoom pulse-zoom--b">
-          <circle class="pulse-border" cx="50" cy="50" r="19"></circle>
-        </g>
-      </svg>
+      <div class="pulse-stage" id="pulse-stage" aria-hidden="true"></div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
     <script>
       const viewer = document.getElementById("viewer");
       const openButton = document.querySelector(".viewer-button");
       const closeButton = document.querySelector(".viewer-close");
+      let isViewerOpen = false;
+      let pulseSketch;
+
+      const createPulseSketch = () => {
+        if (!window.p5 || pulseSketch) {
+          return;
+        }
+
+        pulseSketch = new p5((p) => {
+          const cycle = 2750;
+          const overlayAlpha = 62;
+          const ringWeight = 100;
+          const pulseOffsets = [0, 900];
+
+          const getDiameter = (progress) => {
+            const maxDiameter = Math.max(p.width, p.height) * 2.6;
+            const minDiameter = Math.min(p.width, p.height) * 1;
+
+            if (progress < 0.68) {
+              return p.lerp(maxDiameter, minDiameter, progress / 0.68);
+            }
+
+            return minDiameter;
+          };
+
+          const getAlpha = (progress) => {
+            if (progress < 0.68) {
+              return 1;
+            }
+
+            if (progress < 0.92) {
+              return 1;
+            }
+
+            return p.map(progress, 0.92, 1, 1, 0, true);
+          };
+
+          const getRingColor = (progress, alpha) => {
+            const yellow = [255, 235, 0, 178 * alpha];
+            const red = [255, 64, 64, 220 * alpha];
+
+            if (progress < 0.68 || progress >= 0.92) {
+              return yellow;
+            }
+
+            const blinkProgress = progress - 0.68;
+
+            if (blinkProgress < 0.06) {
+              return yellow;
+            }
+
+            if (blinkProgress < 0.12) {
+              return red;
+            }
+
+            if (blinkProgress < 0.18) {
+              return yellow;
+            }
+
+            return red;
+          };
+
+          const drawPulse = (progress) => {
+            const alpha = getAlpha(progress);
+            const diameter = getDiameter(progress);
+            const cx = p.width / 2;
+            const cy = p.height / 2;
+            const ctx = p.drawingContext;
+
+            ctx.save();
+            ctx.fillStyle = `rgba(255, 235, 0, ${0.24 * alpha})`;
+            ctx.beginPath();
+            ctx.rect(0, 0, p.width, p.height);
+            ctx.arc(cx, cy, diameter / 2, 0, Math.PI * 2, true);
+            ctx.fill("evenodd");
+            ctx.restore();
+
+            p.noFill();
+            p.stroke(...getRingColor(progress, alpha));
+            p.strokeWeight(ringWeight);
+            p.circle(cx, cy, diameter);
+          };
+
+          p.setup = () => {
+            const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+            canvas.parent("pulse-stage");
+            canvas.addClass("pulse-canvas");
+            p.pixelDensity(1);
+          };
+
+          p.draw = () => {
+            p.clear();
+
+            if (!isViewerOpen) {
+              return;
+            }
+
+            const now = p.millis();
+            pulseOffsets.forEach((offset) => {
+              const progress = ((now + offset) % cycle) / cycle;
+              drawPulse(progress);
+            });
+          };
+
+          p.windowResized = () => {
+            p.resizeCanvas(p.windowWidth, p.windowHeight);
+          };
+        });
+      };
 
       const closeViewer = () => {
         viewer.classList.remove("is-open");
         viewer.setAttribute("aria-hidden", "true");
+        isViewerOpen = false;
       };
 
       openButton.addEventListener("click", () => {
+        createPulseSketch();
         viewer.classList.add("is-open");
         viewer.setAttribute("aria-hidden", "false");
+        isViewerOpen = true;
       });
 
       closeButton.addEventListener("click", closeViewer);
