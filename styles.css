@@ -11,6 +11,7 @@
 html,
 body {
   min-height: 100%;
+  touch-action: manipulation;
 }
 
 body {
@@ -89,14 +90,19 @@ body {
 
 .viewer-close {
   position: fixed;
-  top: 20px;
   right: 20px;
-  z-index: 4;
-  width: 48px;
-  height: 48px;
+  bottom: 20px;
+  padding: 12px 18px;
+  min-width: 84px;
+  height: auto;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+  background: #000000;
   color: #ffffff;
-  font-size: 28px;
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1;
+}
+
+.viewer-close {
+  z-index: 4;
 }
