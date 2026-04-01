@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>濱</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="screen">
+      <svg
+        class="mark"
+        viewBox="0 0 100 100"
+        role="img"
+        aria-label="濱"
+      >
+        <circle class="ring" cx="50" cy="50" r="42" />
+        <text class="kanji" x="50" y="50" dominant-baseline="central" text-anchor="middle">
+          濱
+        </text>
+      </svg>
+      <button class="viewer-button" type="button" aria-controls="viewer">
+        NEXT
+      </button>
+    </main>
+    <div class="viewer" id="viewer" aria-hidden="true">
+      <button class="viewer-close" type="button" aria-label="閉じる">×</button>
+      <img class="viewer-image" src="./manbiki.png" alt="manbiki" />
+    </div>
+    <script>
+      const viewer = document.getElementById("viewer");
+      const openButton = document.querySelector(".viewer-button");
+      const closeButton = document.querySelector(".viewer-close");
+
+      const closeViewer = () => {
+        viewer.classList.remove("is-open");
+        viewer.setAttribute("aria-hidden", "true");
+      };
+
+      openButton.addEventListener("click", () => {
+        viewer.classList.add("is-open");
+        viewer.setAttribute("aria-hidden", "false");
+      });
+
+      closeButton.addEventListener("click", closeViewer);
+
+      viewer.addEventListener("click", (event) => {
+        if (event.target === viewer) {
+          closeViewer();
+        }
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeViewer();
+        }
+      });
+    </script>
+  </body>
+</html>
