@@ -55,7 +55,7 @@ body {
   border: 0;
   cursor: pointer;
   position: fixed;
-  left: 20px;
+  right: 20px;
   bottom: 20px;
   z-index: 4;
   min-width: 84px;
