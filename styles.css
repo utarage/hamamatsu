@@ -68,6 +68,14 @@ body {
   line-height: 1;
 }
 
+.viewer-close {
+  display: block;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
 .viewer {
   position: fixed;
   inset: 0;
@@ -88,17 +96,6 @@ body {
   object-fit: cover;
   transform-origin: center;
   animation: viewer-zoom 2.4s ease-in-out infinite alternate;
-}
-
-.pulse-stage {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.pulse-canvas {
-  display: block;
 }
 
 .viewer-close {
