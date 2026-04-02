@@ -104,10 +104,10 @@ body {
 
 @keyframes viewer-zoom {
   0% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1.1) rotate(0deg);
   }
 
   100% {
-    transform: scale(1.2) rotate(2.5deg);
+    transform: scale(1.7) rotate(2.5deg);
   }
 }
